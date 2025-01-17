@@ -1,0 +1,289 @@
+[
+    {
+        "id": "33736014fb0153b6",
+        "type": "inject",
+        "z": "0fa431e00e39f474",
+        "name": "Trakt listák lekérdezése",
+        "props": [
+            {
+                "p": "config",
+                "v": "{\"traktList\":\"\",\"traktApiKey\":\"\",\"traktUrl\":\"\",\"traktUser\":\"\",\"sonarrApiKey\":\"\",\"sonarrUrl\":\"\",\"sonnarAddSeriesConfig\":{\"monitored\":true,\"rootFolderPath\":\"/tv\",\"qualityProfileId\":4,\"seasonFolder\":true,\"monitor\":\"missing\",\"addOptions\":{\"ignoreEpisodesWithFiles\":true,\"ignoreEpisodesWithoutFiles\":false,\"searchForMissingEpisodes\":true}}}",
+                "vt": "json"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.1",
+        "topic": "",
+        "x": 250,
+        "y": 680,
+        "wires": [
+            [
+                "dcafe1cac03a0e1e"
+            ]
+        ]
+    },
+    {
+        "id": "58f755154945f937",
+        "type": "json",
+        "z": "0fa431e00e39f474",
+        "name": "Trakt válasz feldolgozása",
+        "property": "payload",
+        "action": "obj",
+        "pretty": true,
+        "x": 950,
+        "y": 680,
+        "wires": [
+            [
+                "4ad9e9c3fc04ad6b"
+            ]
+        ]
+    },
+    {
+        "id": "b353e7491fb977fc",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "Trakt vs Sonarr összehasonlítás",
+        "func": "let traktShows = msg.trakt.map(item => item.tvdbId);\nlet sonarrShows = msg.sonarr.map(show => ({\n    title: show.title,\n    tvdbId: show.tvdbId,\n    id: show.id,\n    tags: show.tags\n})).filter(show => show.tvdbId);\n\nlet missingInSonarr = msg.trakt.filter(traktShow =>\n    !sonarrShows.some(sonarr => sonarr.tvdbId === traktShow.tvdbId)\n);\n\nlet traktTag = `trakt/${msg.config.traktList}`;\nlet sonarrWithTag = sonarrShows.filter(show => show.tags.includes(traktTag));\nlet obsoleteTags = sonarrWithTag.filter(show => !traktShows.includes(show.tvdbId));\n\nmsg.missingInSonarr = missingInSonarr;\nmsg.obsoleteTags = obsoleteTags;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1190,
+        "y": 760,
+        "wires": [
+            [
+                "73f066e1e533cbb8"
+            ]
+        ]
+    },
+    {
+        "id": "73f066e1e533cbb8",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "Sonarr-hoz hozzáadás",
+        "func": "let traktTag = 'trakt/' + msg.config.traktList;\nmsg.payload = msg.missingInSonarr.map(item => {\n    return {\n        ...msg.config.sonnarAddSeriesConfig,\n        ...{ \"title\": item.title, \"tvdbId\": item.tvdbId }\n    };\n});\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1430,
+        "y": 760,
+        "wires": [
+            [
+                "afa349054ad27588"
+            ]
+        ]
+    },
+    {
+        "id": "a708bf6b42fc1940",
+        "type": "json",
+        "z": "0fa431e00e39f474",
+        "name": "Sonarr válasz feldolgozása",
+        "property": "payload",
+        "action": "obj",
+        "pretty": true,
+        "x": 690,
+        "y": 760,
+        "wires": [
+            [
+                "17aadec118c9189d"
+            ]
+        ]
+    },
+    {
+        "id": "dcafe1cac03a0e1e",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "set trakt get list request",
+        "func": "msg.method = \"GET\";  // HTTP metódus\nmsg.url = `${msg.config.traktUrl}/users/${msg.config.traktUser}/lists/${msg.config.traktList}/items`;\n\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"trakt-api-version\": 2,\n    \"trakt-api-key\": msg.config.traktApiKey\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 680,
+        "wires": [
+            [
+                "8144043904333a62"
+            ]
+        ]
+    },
+    {
+        "id": "8144043904333a62",
+        "type": "http request",
+        "z": "0fa431e00e39f474",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 730,
+        "y": 680,
+        "wires": [
+            [
+                "58f755154945f937"
+            ]
+        ]
+    },
+    {
+        "id": "438fd683313ee9be",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "set trakt get list request",
+        "func": "msg.method = \"GET\";  // HTTP metódus\nmsg.url = `${msg.config.sonarrUrl}/api/v3/series?apikey=${msg.config.sonarrApiKey}`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 760,
+        "wires": [
+            [
+                "247afc6bd41e3ce2"
+            ]
+        ]
+    },
+    {
+        "id": "247afc6bd41e3ce2",
+        "type": "http request",
+        "z": "0fa431e00e39f474",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 450,
+        "y": 760,
+        "wires": [
+            [
+                "a708bf6b42fc1940"
+            ]
+        ]
+    },
+    {
+        "id": "4ad9e9c3fc04ad6b",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "set msg.trakt",
+        "func": "var list = msg.payload\n    .filter(item => item.type === 'show' && item.show.ids.tvdb)\n    .map(item => ({\n        title: item.show.title,\n        tvdbId: item.show.ids.tvdb\n    }));\n\nmsg = {\n    \"config\":msg.config,\n    \"trakt\":list\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 680,
+        "wires": [
+            [
+                "438fd683313ee9be"
+            ]
+        ]
+    },
+    {
+        "id": "17aadec118c9189d",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "set msg.sonarr",
+        "func": "msg = {\n    \"config\":msg.config,\n    \"trakt\":msg.trakt,\n    \"sonarr\":msg.payload\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 760,
+        "wires": [
+            [
+                "b353e7491fb977fc"
+            ]
+        ]
+    },
+    {
+        "id": "b2f5f6a316d8f0c8",
+        "type": "function",
+        "z": "0fa431e00e39f474",
+        "name": "set trakt get list request",
+        "func": "msg.method = \"POST\";  // HTTP metódus\nmsg.url = `${msg.config.sonarrUrl}/api/v3/series`;\nmsg.headers = {\n    \"Content-Type\": \"application/json\",\n    \"X-Api-Key\": msg.config.sonarrApiKey\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 820,
+        "wires": [
+            [
+                "21692f86f45d393f",
+                "78c36ebc3fb2f5f3"
+            ]
+        ]
+    },
+    {
+        "id": "21692f86f45d393f",
+        "type": "http request",
+        "z": "0fa431e00e39f474",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 650,
+        "y": 820,
+        "wires": [
+            [
+                "78c36ebc3fb2f5f3"
+            ]
+        ]
+    },
+    {
+        "id": "78c36ebc3fb2f5f3",
+        "type": "debug",
+        "z": "0fa431e00e39f474",
+        "name": "debug 40",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 900,
+        "wires": []
+    }
+]
