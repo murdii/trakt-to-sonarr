@@ -1,13 +1,25 @@
 [
     {
-        "id": "33736014fb0153b6",
+        "id": "69018ac081511c98",
         "type": "inject",
         "z": "0fa431e00e39f474",
         "name": "Trakt listák lekérdezése",
         "props": [
             {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "traktList",
+                "v": "sonarr",
+                "vt": "str"
+            },
+            {
                 "p": "config",
-                "v": "{\"traktList\":\"\",\"traktApiKey\":\"\",\"traktUrl\":\"\",\"traktUser\":\"\",\"sonarrApiKey\":\"\",\"sonarrUrl\":\"\",\"sonnarAddSeriesConfig\":{\"monitored\":true,\"rootFolderPath\":\"/tv\",\"qualityProfileId\":4,\"seasonFolder\":true,\"monitor\":\"missing\",\"addOptions\":{\"ignoreEpisodesWithFiles\":true,\"ignoreEpisodesWithoutFiles\":false,\"searchForMissingEpisodes\":true}}}",
+                "v": "{\"traktList\":\"sonarr-all\",\"traktApiKey\":\"609bc8d1cd7632e26f9d62dc7c617cd115426062baa41926034bb504ab178613\",\"traktUrl\":\"https://api.trakt.tv\",\"traktUser\":\"stullertamas\",\"sonarrApiKey\":\"3defd2386177413db4b13b56f29e5a78\",\"sonarrUrl\":\"http://192.168.1.5:8989\",\"sonnarAddSeriesConfig\":{\"monitored\":true,\"rootFolderPath\":\"/tv\",\"qualityProfileId\":4,\"seasonFolder\":true,\"monitor\":\"missing\",\"addOptions\":{\"ignoreEpisodesWithFiles\":true,\"ignoreEpisodesWithoutFiles\":false,\"searchForMissingEpisodes\":true}}}",
                 "vt": "json"
             }
         ],
@@ -16,32 +28,34 @@
         "once": true,
         "onceDelay": "0.1",
         "topic": "",
-        "x": 250,
-        "y": 680,
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 260,
         "wires": [
             [
-                "dcafe1cac03a0e1e"
+                "e7982cf6ea40dd69"
             ]
         ]
     },
     {
-        "id": "58f755154945f937",
+        "id": "4f03ce0f0977f76c",
         "type": "json",
         "z": "0fa431e00e39f474",
         "name": "Trakt válasz feldolgozása",
         "property": "payload",
         "action": "obj",
         "pretty": true,
-        "x": 950,
-        "y": 680,
+        "x": 910,
+        "y": 260,
         "wires": [
             [
-                "4ad9e9c3fc04ad6b"
+                "f76d4f5f1eef123f"
             ]
         ]
     },
     {
-        "id": "b353e7491fb977fc",
+        "id": "e1c83132fb74dbbb",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "Trakt vs Sonarr összehasonlítás",
@@ -52,16 +66,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1190,
-        "y": 760,
+        "x": 1150,
+        "y": 340,
         "wires": [
             [
-                "73f066e1e533cbb8"
+                "0a91f871b7f980dd"
             ]
         ]
     },
     {
-        "id": "73f066e1e533cbb8",
+        "id": "0a91f871b7f980dd",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "Sonarr-hoz hozzáadás",
@@ -72,32 +86,32 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1430,
-        "y": 760,
+        "x": 1390,
+        "y": 340,
         "wires": [
             [
-                "afa349054ad27588"
+                "82da3fe1ae76b6a7"
             ]
         ]
     },
     {
-        "id": "a708bf6b42fc1940",
+        "id": "1d695e6ebc8032d0",
         "type": "json",
         "z": "0fa431e00e39f474",
         "name": "Sonarr válasz feldolgozása",
         "property": "payload",
         "action": "obj",
         "pretty": true,
-        "x": 690,
-        "y": 760,
+        "x": 650,
+        "y": 340,
         "wires": [
             [
-                "17aadec118c9189d"
+                "6773db46a53541cb"
             ]
         ]
     },
     {
-        "id": "dcafe1cac03a0e1e",
+        "id": "e7982cf6ea40dd69",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "set trakt get list request",
@@ -108,16 +122,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 510,
-        "y": 680,
+        "x": 470,
+        "y": 260,
         "wires": [
             [
-                "8144043904333a62"
+                "ca590ca8813f79ba"
             ]
         ]
     },
     {
-        "id": "8144043904333a62",
+        "id": "ca590ca8813f79ba",
         "type": "http request",
         "z": "0fa431e00e39f474",
         "name": "",
@@ -132,16 +146,16 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 730,
-        "y": 680,
+        "x": 690,
+        "y": 260,
         "wires": [
             [
-                "58f755154945f937"
+                "4f03ce0f0977f76c"
             ]
         ]
     },
     {
-        "id": "438fd683313ee9be",
+        "id": "635e83051f71295b",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "set trakt get list request",
@@ -152,16 +166,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 230,
-        "y": 760,
+        "x": 190,
+        "y": 340,
         "wires": [
             [
-                "247afc6bd41e3ce2"
+                "1d3c7d6a3cd234f7"
             ]
         ]
     },
     {
-        "id": "247afc6bd41e3ce2",
+        "id": "1d3c7d6a3cd234f7",
         "type": "http request",
         "z": "0fa431e00e39f474",
         "name": "",
@@ -176,16 +190,16 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 450,
-        "y": 760,
+        "x": 410,
+        "y": 340,
         "wires": [
             [
-                "a708bf6b42fc1940"
+                "1d695e6ebc8032d0"
             ]
         ]
     },
     {
-        "id": "4ad9e9c3fc04ad6b",
+        "id": "f76d4f5f1eef123f",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "set msg.trakt",
@@ -196,16 +210,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1210,
-        "y": 680,
+        "x": 1170,
+        "y": 260,
         "wires": [
             [
-                "438fd683313ee9be"
+                "635e83051f71295b"
             ]
         ]
     },
     {
-        "id": "17aadec118c9189d",
+        "id": "6773db46a53541cb",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "set msg.sonarr",
@@ -216,16 +230,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 920,
-        "y": 760,
+        "x": 880,
+        "y": 340,
         "wires": [
             [
-                "b353e7491fb977fc"
+                "e1c83132fb74dbbb"
             ]
         ]
     },
     {
-        "id": "b2f5f6a316d8f0c8",
+        "id": "f6058a961792b9ae",
         "type": "function",
         "z": "0fa431e00e39f474",
         "name": "set trakt get list request",
@@ -236,17 +250,17 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 410,
-        "y": 820,
+        "x": 370,
+        "y": 400,
         "wires": [
             [
-                "21692f86f45d393f",
-                "78c36ebc3fb2f5f3"
+                "6eba78e49e9b8a5c",
+                "909fa64daea4fcdd"
             ]
         ]
     },
     {
-        "id": "21692f86f45d393f",
+        "id": "6eba78e49e9b8a5c",
         "type": "http request",
         "z": "0fa431e00e39f474",
         "name": "",
@@ -261,19 +275,39 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 650,
-        "y": 820,
+        "x": 610,
+        "y": 400,
         "wires": [
             [
-                "78c36ebc3fb2f5f3"
+                "909fa64daea4fcdd"
             ]
         ]
     },
     {
-        "id": "78c36ebc3fb2f5f3",
+        "id": "82da3fe1ae76b6a7",
+        "type": "split",
+        "z": "0fa431e00e39f474",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 110,
+        "y": 400,
+        "wires": [
+            [
+                "f6058a961792b9ae"
+            ]
+        ]
+    },
+    {
+        "id": "909fa64daea4fcdd",
         "type": "debug",
         "z": "0fa431e00e39f474",
-        "name": "debug 40",
+        "name": "debug 39",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -282,8 +316,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 700,
-        "y": 900,
+        "x": 660,
+        "y": 480,
         "wires": []
     }
 ]
